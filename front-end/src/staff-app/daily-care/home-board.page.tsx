@@ -13,14 +13,20 @@ import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
-
+  const [sortBy, setSortBy] = useState("asc")
+  const [sortByName, setSortByName] = useState("first_name")
+  const [text, setText] = useState("")
+  
   useEffect(() => {
-    void getStudents()
-  }, [getStudents])
+    void getStudents({ sortBy, sortByName, text })
+  }, [sortBy, sortByName, text])
 
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
+    }
+    if (action === "sort") {
+      setSortBy(sortBy === "asc" ? "desc" : "asc")
     }
   }
 
@@ -30,10 +36,18 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
+  const onChangeText = (value: string) => {
+    setText(value)
+  }
+
+  const onChangeSortName = (value: string) => {
+    setSortByName(value)
+  }
+
   return (
     <>
       <S.PageContainer>
-        <Toolbar onItemClick={onToolbarAction} />
+        <Toolbar onItemClick={onToolbarAction} sortByName={sortByName} sortBy={sortBy} onChangeSortName={onChangeSortName} onChangeText={onChangeText} text={text} />
 
         {loadState === "loading" && (
           <CenteredContainer>
@@ -44,7 +58,7 @@ export const HomeBoardPage: React.FC = () => {
         {loadState === "loaded" && data?.students && (
           <>
             {data.students.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+              <StudentListTile key={s.id} isRollMode={isRollMode} student={s}/>
             ))}
           </>
         )}
@@ -55,7 +69,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction}/>
     </>
   )
 }
@@ -63,13 +77,26 @@ export const HomeBoardPage: React.FC = () => {
 type ToolbarAction = "roll" | "sort"
 interface ToolbarProps {
   onItemClick: (action: ToolbarAction, value?: string) => void
+  sortByName: string
+  sortBy: string
+  onChangeSortName: (value: string) => void
+  onChangeText: (value: string) => void
+  text: string
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick } = props
+  const { onItemClick, sortByName, sortBy, onChangeSortName, onChangeText, text } = props
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name</div>
-      <div>Search</div>
+      <div>First Name 
+        <span style={{padding: "0 10px"}}>
+          <FontAwesomeIcon icon={sortBy === "asc" ? "sort-alpha-down" : "sort-alpha-up"} size="sm" style={{ cursor: "pointer"}} onClick={() => onItemClick("sort")}/>
+        </span>
+        <select value={sortByName} onChange={(e) => onChangeSortName(e.target.value)}>
+          <option value="first_name">First Name</option>
+          <option value="last_name">Last Name</option>
+        </select>
+      </div>
+      <div><input type="text" placeholder="Search"  value={text} onChange={(e) => onChangeText(e.target.value)} /></div>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )
