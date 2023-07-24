@@ -4,7 +4,6 @@ import { RollInput } from "shared/models/roll"
 import { getHomeboardStudents } from "api/get-homeboard-students"
 import { getActivities } from "api/get-activities"
 import { saveActiveRoll } from "api/save-active-roll"
-import { SearchSortParams } from "shared/interfaces/searchSort.interface"
 
 interface Options {
   url: Endpoint
@@ -26,7 +25,7 @@ export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: O
 
       switch (url) {
         case "get-homeboard-students":
-          return getHomeboardStudents(params as SearchSortParams).then(process)
+          return getHomeboardStudents().then(process)
         case "get-activities":
           return getActivities().then(process)
         case "save-roll":
