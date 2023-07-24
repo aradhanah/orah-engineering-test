@@ -10,7 +10,7 @@ export async function getHomeboardStudents(params: SearchSortParams): Promise<Ap
     await httpMock({ randomFailure: true })
     return {
       success: true,
-      students: generateStudents(14, params),
+      students: generateStudents(15, params),
     }
   } catch (error) {
     return {

@@ -1,20 +1,22 @@
 import React from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/Button"
+import { createMuiTheme } from '@material-ui/core/styles'
+import { ThemeProvider } from '@material-ui/styles'
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { Person } from "shared/models/person"
-export type ActiveRollAction = "filter" | "exit"
+export type ActiveRollAction = "complete" | "exit"
 interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
-  studentData: {students: Person[]} | undefined
+  studentData: { students: Person[] } | undefined
   filterStudentsByRoll: (roll: string) => void
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick, studentData, filterStudentsByRoll } = props
-  
+
   const rollPresentLen: any = studentData?.students?.filter((student: Person) => {
     return student.rollStatus === 'present'
   }).length
@@ -28,6 +30,14 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   }).length
 
   const rollAll = rollPresentLen + rollLateLen + rollAbsentLen;
+
+  const theme = createMuiTheme({
+    palette: {
+      action: {
+        disabled: '#cccccc9e'
+      }
+    }
+  });
 
   return (
     <S.Overlay isActive={isActive}>
@@ -44,12 +54,14 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
             filterStudentsByRoll={filterStudentsByRoll}
           />
           <div style={{ marginTop: Spacing.u6 }}>
-            <Button color="inherit" onClick={() => onItemClick("exit")}>
-              Exit
-            </Button>
-            <Button color="inherit" style={{ marginLeft: Spacing.u2 }} onClick={() => onItemClick("filter")}>
-              Complete
-            </Button>
+            <ThemeProvider theme={theme}>
+              <Button color="inherit" style={{ border: "1px solid #45507e" }} onClick={() => onItemClick("exit")}>
+                Exit
+              </Button>
+              <Button color="inherit" style={{ marginLeft: Spacing.u2, border: "1px solid #45507e" }} onClick={() => onItemClick("complete")} disabled={rollAll !== studentData?.students.length}>
+                Complete
+              </Button>
+            </ThemeProvider>
           </div>
         </div>
       </S.Content>

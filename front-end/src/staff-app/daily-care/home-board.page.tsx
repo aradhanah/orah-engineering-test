@@ -12,7 +12,11 @@ import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
+
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+
+  const [saveActiveRoll] = useApi<{ students: Person[] }>({ url: "save-roll" })
+
   const [sortBy, setSortBy] = useState("asc")
   const [sortByName, setSortByName] = useState("first_name")
   const [text, setText] = useState("")
@@ -32,14 +36,34 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
+  const resetStudentRoll = () => {
+    const studentLength = data?.students.length || 0;
+    for (let i = 0; i < studentLength; i++) {
+      if (data != undefined && data.students[i] != undefined) {
+        data.students[i].rollStatus = "unmark";
+      }
+    }
+  }
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
-      const studentLength = data?.students.length || 0;
-      for(let i = 0; i < studentLength; i++) {
-        if(data != undefined && data.students[i] != undefined){
-          data.students[i].rollStatus = "";
-        }
+        resetStudentRoll();
+    }
+    if (action === "complete") {
+      let studentRollInput = data?.students.map((student, index) => {
+        return { student_id: student.id, roll_state: student.rollStatus, name: `${student.first_name} ${student.last_name}` }
+      })
+      studentRollInput?.sort(function (a: any, b: any) {
+        var keyA = new Date(a.student_id),
+          keyB = new Date(b.student_id);
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+      const params = {
+        student_roll_states: studentRollInput
       }
+      saveActiveRoll(params);
+      resetStudentRoll();
     }
     setIsRollMode(false);
   }
@@ -72,7 +96,7 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {data.students.filter((student)=>{
+            {data.students.filter((student) => {
               return filterByRoll === "all" ? true : student.rollStatus === filterByRoll
             }).map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} updateStudentList={updateStudentList}/>
@@ -86,7 +110,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} studentData={data} filterStudentsByRoll={filterStudentsByRoll}/>
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} studentData={data} filterStudentsByRoll={filterStudentsByRoll} />
     </>
   )
 }
@@ -104,16 +128,16 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, sortByName, sortBy, onChangeSortName, onChangeText, text } = props
   return (
     <S.ToolbarContainer>
-      <div>First Name 
-        <span style={{padding: "0 10px"}}>
-          <FontAwesomeIcon icon={sortBy === "asc" ? "sort-alpha-down" : "sort-alpha-up"} size="sm" style={{ cursor: "pointer"}} onClick={() => onItemClick("sort")}/>
+      <div>First Name
+        <span style={{ padding: "0 10px" }}>
+          <FontAwesomeIcon icon={sortBy === "asc" ? "sort-alpha-down" : "sort-alpha-up"} size="sm" style={{ cursor: "pointer" }} onClick={() => onItemClick("sort")} />
         </span>
         <select value={sortByName} onChange={(e) => onChangeSortName(e.target.value)}>
           <option value="first_name">First Name</option>
           <option value="last_name">Last Name</option>
         </select>
       </div>
-      <div><input type="text" placeholder="Search"  value={text} onChange={(e) => onChangeText(e.target.value)} /></div>
+      <div><input type="text" placeholder="Search" value={text} onChange={(e) => onChangeText(e.target.value)} /></div>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )

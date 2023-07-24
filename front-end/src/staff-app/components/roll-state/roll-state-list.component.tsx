@@ -11,7 +11,7 @@ interface Props {
   size?: number
   filterStudentsByRoll: (roll: string) => void
 }
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick, filterStudentsByRoll }) => {
+export const RollStateList: React.FC<Props> = ({ stateList, size = 15, onItemClick, filterStudentsByRoll }) => {
   const onClick = (type: ItemType) => {
     if (onItemClick) {
       onItemClick(type)
