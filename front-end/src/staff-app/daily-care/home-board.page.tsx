@@ -16,7 +16,9 @@ export const HomeBoardPage: React.FC = () => {
   const [sortBy, setSortBy] = useState("asc")
   const [sortByName, setSortByName] = useState("first_name")
   const [text, setText] = useState("")
-  
+  const [updateStudentObj, setUpdateStudentObj] = useState(false)
+  const [filterByRoll, setFilterByRoll] = useState("all");
+
   useEffect(() => {
     void getStudents({ sortBy, sortByName, text })
   }, [sortBy, sortByName, text])
@@ -44,6 +46,10 @@ export const HomeBoardPage: React.FC = () => {
     setSortByName(value)
   }
 
+  const updateStudentList = () => {
+    setUpdateStudentObj(!updateStudentObj);
+  }
+
   return (
     <>
       <S.PageContainer>
@@ -57,8 +63,10 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {data.students.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s}/>
+            {data.students.filter((student)=>{
+              return filterByRoll === "all" ? true : student.rollStatus === filterByRoll
+            }).map((s) => (
+              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} updateStudentList={updateStudentList}/>
             ))}
           </>
         )}
@@ -69,7 +77,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction}/>
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} studentData={data}/>
     </>
   )
 }

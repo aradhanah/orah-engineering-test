@@ -3,6 +3,7 @@ export interface Person {
   first_name: string
   last_name: string
   photo_url?: string
+  rollStatus?: string
 }
 
 export const PersonHelper = {
