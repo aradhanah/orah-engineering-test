@@ -22,11 +22,50 @@ export const HomeBoardPage: React.FC = () => {
   const [text, setText] = useState("")
   const [updateStudentObj, setUpdateStudentObj] = useState(false)
   const [filterByRoll, setFilterByRoll] = useState("all");
+  const [studentData, setStudentData] = useState(data)
 
   useEffect(() => {
-    void getStudents({ sortBy, sortByName, text })
+      void getStudents({ sortBy, sortByName, text })
+  }, [])
+
+  const sortByNameFunc = (data: any, sortKey: string) => {
+    return data.sort(function(itemA: any, itemB: any) {
+      const keyA = itemA[sortKey].toLowerCase();
+      const keyB = itemB[sortKey].toLowerCase();
+  
+      if (keyA < keyB) return -1;
+      if (keyA > keyB) return 1;
+      return 0;
+    });
+  }
+  useEffect(() => {
+    if(studentData) {
+      let mutatedData: any = data;
+      if(sortByName) {
+        let sortedData: any = sortByNameFunc(mutatedData?.students, sortByName);
+        let dataSort = sortBy === 'asc' ? sortedData : sortedData.reverse();
+        mutatedData = {students: dataSort};
+      }
+    
+      if(text) {
+        let search = mutatedData?.students.filter((item: any, index: number) => {
+          return item["first_name"].toLowerCase().indexOf(text.toLowerCase()) > -1 || 
+                item["last_name"].toLowerCase().indexOf(text.toLowerCase()) > -1
+        })
+        mutatedData = {students: search};
+        let dataSearch: any = {
+          students: search
+        }
+      }
+        setStudentData(mutatedData);
+
+    }
   }, [sortBy, sortByName, text])
 
+  useEffect(() => {
+    setStudentData(data);
+  }, [data]);
+  
   const onToolbarAction = (action: ToolbarAction) => {
     if (action === "roll") {
       setIsRollMode(true)
@@ -37,10 +76,10 @@ export const HomeBoardPage: React.FC = () => {
   }
 
   const resetStudentRoll = () => {
-    const studentLength = data?.students.length || 0;
+    const studentLength = studentData?.students.length || 0;
     for (let i = 0; i < studentLength; i++) {
-      if (data != undefined && data.students[i] != undefined) {
-        data.students[i].rollStatus = "unmark";
+      if (studentData != undefined && studentData.students[i] != undefined) {
+        studentData.students[i].rollStatus = "unmark";
       }
     }
   }
@@ -94,9 +133,9 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && (
+        {loadState === "loaded" && studentData?.students && (
           <>
-            {data.students.filter((student) => {
+            {studentData.students.filter((student) => {
               return filterByRoll === "all" ? true : student.rollStatus === filterByRoll
             }).map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} updateStudentList={updateStudentList}/>
