@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { BorderRadius } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
-import { RolllStateType } from "shared/models/roll"
+import { RolllStateType, RollTypes } from "shared/models/roll"
 
 interface Props {
   type: RolllStateType
@@ -13,7 +13,7 @@ interface Props {
 export const RollStateIcon: React.FC<Props> = (props) => {
   const { type, size = 20, onClick } = props
   return (
-    <S.Icon size={size} border={type === "unmark"} bgColor={getBgColor(type)} clickable={Boolean(onClick)} onClick={onClick}>
+    <S.Icon size={size} border={type === RollTypes.UNMARK} bgColor={getBgColor(type)} clickable={Boolean(onClick)} onClick={onClick}>
       <FontAwesomeIcon icon="check" size={size > 14 ? "lg" : "sm"} />
     </S.Icon>
   )
@@ -21,13 +21,13 @@ export const RollStateIcon: React.FC<Props> = (props) => {
 
 function getBgColor(type: RolllStateType) {
   switch (type) {
-    case "unmark":
+    case RollTypes.UNMARK:
       return "#fff"
-    case "present":
+    case RollTypes.PRESENT:
       return "#13943b"
-    case "absent":
+    case RollTypes.ABSENT:
       return "#9b9b9b"
-    case "late":
+    case RollTypes.LATE:
       return "#f5a623"
     default:
       return "#13943b"

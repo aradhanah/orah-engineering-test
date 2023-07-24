@@ -6,6 +6,7 @@ import { ThemeProvider } from '@material-ui/styles'
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { Person } from "shared/models/person"
+import { RollTypes } from "shared/models/roll"
 export type ActiveRollAction = "complete" | "exit"
 interface Props {
   isActive: boolean
@@ -18,15 +19,15 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
   const { isActive, onItemClick, studentData, filterStudentsByRoll } = props
 
   const rollPresentLen: any = studentData?.students?.filter((student: Person) => {
-    return student.rollStatus === 'present'
+    return student.rollStatus === RollTypes.PRESENT
   }).length
 
   const rollLateLen: any = studentData?.students?.filter((student: Person) => {
-    return student.rollStatus === 'late'
+    return student.rollStatus === RollTypes.LATE
   }).length
 
   const rollAbsentLen: any = studentData?.students?.filter((student: Person) => {
-    return student.rollStatus === 'absent'
+    return student.rollStatus === RollTypes.ABSENT
   }).length
 
   const rollAll = rollPresentLen + rollLateLen + rollAbsentLen;
@@ -46,10 +47,10 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={[
-              { type: "all", count: rollAll || 0 },
-              { type: "present", count: rollPresentLen || 0 },
-              { type: "late", count: rollLateLen || 0 },
-              { type: "absent", count: rollAbsentLen || 0 },
+              { type: RollTypes.ALL, count: rollAll || 0 },
+              { type: RollTypes.PRESENT, count: rollPresentLen || 0 },
+              { type: RollTypes.LATE, count: rollLateLen || 0 },
+              { type: RollTypes.ABSENT, count: rollAbsentLen || 0 },
             ]}
             filterStudentsByRoll={filterStudentsByRoll}
           />

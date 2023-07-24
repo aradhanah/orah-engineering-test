@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import styled from "styled-components"
 import { Spacing } from "shared/styles/styles"
 import { Activity, RollActivity } from "shared/interfaces/rollActivity.interface"
+import { RollTypes } from "shared/models/roll"
 
 interface Props {
   activity: Activity[]
@@ -28,7 +29,7 @@ export const AttendanceTableDisplay: React.FC<Props> = ({ activity }) => {
 
                     {activity.map((act) => {
                       return (
-                        <S.TableRowData style={{ color: act.entity.student_roll_states[index].roll_state === "absent" ? "red" : "" }}>
+                        <S.TableRowData style={{ color: act.entity.student_roll_states[index].roll_state === RollTypes.ABSENT ? "red" : "" }}>
                           {act.entity.student_roll_states[index].roll_state}
                         </S.TableRowData>
                       )
