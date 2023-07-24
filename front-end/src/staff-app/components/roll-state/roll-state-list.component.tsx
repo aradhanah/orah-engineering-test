@@ -9,13 +9,14 @@ interface Props {
   stateList: StateList[]
   onItemClick?: (type: ItemType) => void
   size?: number
+  filterStudentsByRoll: (roll: string) => void
 }
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick, filterStudentsByRoll }) => {
   const onClick = (type: ItemType) => {
-    console.log('clicked', type);
     if (onItemClick) {
       onItemClick(type)
     }
+    filterStudentsByRoll(type);
   }
 
   return (

@@ -9,10 +9,11 @@ interface Props {
   isActive: boolean
   onItemClick: (action: ActiveRollAction, value?: string) => void
   studentData: {students: Person[]} | undefined
+  filterStudentsByRoll: (roll: string) => void
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick, studentData } = props
+  const { isActive, onItemClick, studentData, filterStudentsByRoll } = props
   
   const rollPresentLen: any = studentData?.students?.filter((student: Person) => {
     return student.rollStatus === 'present'
@@ -40,12 +41,13 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
               { type: "late", count: rollLateLen || 0 },
               { type: "absent", count: rollAbsentLen || 0 },
             ]}
+            filterStudentsByRoll={filterStudentsByRoll}
           />
           <div style={{ marginTop: Spacing.u6 }}>
             <Button color="inherit" onClick={() => onItemClick("exit")}>
               Exit
             </Button>
-            <Button color="inherit" style={{ marginLeft: Spacing.u2 }} onClick={() => onItemClick("exit")}>
+            <Button color="inherit" style={{ marginLeft: Spacing.u2 }} onClick={() => onItemClick("filter")}>
               Complete
             </Button>
           </div>

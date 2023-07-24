@@ -34,8 +34,14 @@ export const HomeBoardPage: React.FC = () => {
 
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
-      setIsRollMode(false)
+      const studentLength = data?.students.length || 0;
+      for(let i = 0; i < studentLength; i++) {
+        if(data != undefined && data.students[i] != undefined){
+          data.students[i].rollStatus = "";
+        }
+      }
     }
+    setIsRollMode(false);
   }
 
   const onChangeText = (value: string) => {
@@ -50,6 +56,9 @@ export const HomeBoardPage: React.FC = () => {
     setUpdateStudentObj(!updateStudentObj);
   }
 
+  const filterStudentsByRoll = (roll: string) => {
+    setFilterByRoll(roll);
+  }
   return (
     <>
       <S.PageContainer>
@@ -77,7 +86,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} studentData={data}/>
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} studentData={data} filterStudentsByRoll={filterStudentsByRoll}/>
     </>
   )
 }

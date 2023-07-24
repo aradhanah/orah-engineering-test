@@ -21,6 +21,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student, updateSt
       updateStudentList();
     }
   }
+  
   return (
     <S.Container>
       <S.Avatar url={Images.avatar}></S.Avatar>
@@ -29,7 +30,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student, updateSt
       </S.Content>
       {isRollMode && (
         <S.Roll>
-          <RollStateSwitcher setRoll={setRoll}/>
+          <RollStateSwitcher setRoll={setRoll} student={student}/>
         </S.Roll>
       )}
     </S.Container>
